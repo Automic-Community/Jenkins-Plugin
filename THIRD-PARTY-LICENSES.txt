@@ -1,0 +1,11 @@
+Apache License, Version 2.0 http://www.apache.org/licenses/LICENSE-2.0.txt THIRD-PARTY-LICENSES/apache-2.0.txt
+- org.apache.axis              axis-saaj     version 1.4 
+- org.apache.axis              axis-jaxrpc   version 1.4   
+- org.apache.axis              axis          version 1.4
+- commons-lang                 commons-lang  version 2.3
+
+Apache License, Version 1.1 https://perl.apache.org/start/LICENSE.txt THIRD-PARTY-LICENSES/apache-1.1.txt
+- axis                         axis-wsdl4j   version 1.2-RC1 (https://confluence.sakaiproject.org/display/LIC/Library+and+Licensing+Information#)
+
+MIT License, https://opensource.org/licenses/MIT http://www.slf4j.org/license.html THIRD-PARTY-LICENSES/mit.txt
+- org.slf4j                    slf4j-api     version 1.7.7
