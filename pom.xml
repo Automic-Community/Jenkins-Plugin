@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+	    <groupId>org.jenkins-ci.plugins</groupId>
+	    <artifactId>plugin</artifactId>
+	    <version>2.19</version>
+	    <relativePath/>
+  	</parent>
+
+    <groupId>com.automic.ara.inbound</groupId>
+    <artifactId>PLG.AUTOMIC_JENKINS</artifactId>
+    <version>${plugin.version}</version>
+    <packaging>hpi</packaging>
+    
+    <name>Automic Release Automation Plugin</name>
+    <description>Integrates Jenkins with Automic Release Automation (ARA) adding ability to create ARA Packages, execute ARA Workflows. </description>
+    <url>http://www.automic.com/</url>
+    
+    <organization>
+    	<name>Automic Software GmbH</name>
+    	<url>http://www.automic.com/</url>   	
+    </organization>
+    
+    <properties>
+        <!-- Baseline Jenkins version you use to build the plugin. Users must have this version or newer to run. -->
+	    <jenkins.version>2.19.3</jenkins.version>
+	    <!-- Java Level to use. Java 7 required when using core >= 1.612 -->
+	    <java.level>7</java.level>
+	    <plugin.version>1.3.0</plugin.version>
+	    <build.number>Automatically generated for release build.</build.number>
+	    <build.revision>Automatically generated for release build.</build.revision>
+	    <timestamp>${maven.build.timestamp}</timestamp>
+	    <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+    </properties>
+
+    <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.axis</groupId>
+            <artifactId>axis</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.axis</groupId>
+            <artifactId>axis-jaxrpc</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.axis</groupId>
+            <artifactId>axis-saaj</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>axis</groupId>
+            <artifactId>axis-wsdl4j</artifactId>
+            <version>1.2-RC1</version>
+        </dependency>
+        
+        <!-- REST jersey client -->
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>1.19.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+        
+    </dependencies>
+    
+    <!-- repositories and pluginrepositories  -->
+    <repositories>
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+    
+    
+    <build>
+	  <plugins>	 
+	      <plugin>
+	 	  	   <groupId>org.jenkins-ci.tools</groupId>
+	 	  	   <artifactId>maven-hpi-plugin</artifactId>
+	 	  	   <configuration>
+	 	  	      <archive>
+	 	  	         <manifestEntries>
+	 	  		    <Build-Number>${build.number}</Build-Number>
+	 	  		    <Build-Revision>${build.revision}</Build-Revision>
+	 	  	 	    <Plugin-BuildDate>${timestamp}</Plugin-BuildDate>
+	 	  		 </manifestEntries>
+	 	  	      </archive>
+	 	  	   </configuration>
+	      </plugin>
+	 
+	    <!-- This plugin disables java doclint which is strict in Java 8 -->	    
+	    <plugin>
+	      	<groupId>org.apache.maven.plugins</groupId>
+	      	<artifactId>maven-javadoc-plugin</artifactId>
+	      	<configuration>
+	        	<additionalparam>-Xdoclint:none</additionalparam>
+	      	</configuration>
+	    </plugin>
+	    <plugin>
+	        <groupId>org.sonatype.plugins</groupId>
+	        <artifactId>nexus-staging-maven-plugin</artifactId>
+	        <version>1.6.5</version>
+	        <extensions>true</extensions>
+	        <configuration>
+	           <!-- The server "id" element from settings to use authentication from -->
+	           <serverId>com.automic.nexusvie</serverId>
+	           <!-- The Base URL of Nexus instance where we want to stage -->
+	           <nexusUrl>https://nexusvie.automic.com/nexus</nexusUrl>
+	           <stagingProfileId>2f9c3dc1ba22ba</stagingProfileId>
+	           <!-- do NOT auto release after close as we need to retrieve CLM base url as long the staged repo exists -->
+	           <!-- explicit release step in build script required (outside of POM) -->
+	           <!-- <autoReleaseAfterClose>true</autoReleaseAfterClose>-->
+	           <!-- staging will remain open to publish the full action pack bundle into the repository -->
+	           <!-- beaware: staging repository needs to be closed within the buildsteps -->
+	           <skipStagingRepositoryClose>true</skipStagingRepositoryClose>
+	           <!-- will keep the deployed artifact even in case of errors for further debugging -->
+	           <keepStagingRepositoryOnCloseRuleFailure>true</keepStagingRepositoryOnCloseRuleFailure>
+	        </configuration>
+	    </plugin>            
+	    
+		<plugin>
+   	    	<artifactId>maven-assembly-plugin</artifactId>
+   	    	<version>2.6</version>
+    	    <configuration>
+		   		<appendAssemblyId>false</appendAssemblyId>
+	        </configuration>
+	    	<executions>
+	           <execution>
+	             <id>make-clm-zip</id>
+	             <!-- this is used for inheritance merges -->
+	             <phase>package</phase>
+	             <!-- bind to the packaging phase -->
+	             <goals>
+	                <goal>single</goal>
+	             </goals>
+	             <configuration>
+	                <descriptors>
+	                     <descriptor>clm-libs-assembly.xml</descriptor>
+	                </descriptors>
+	             </configuration>
+	         	</execution>	      
+	    	</executions>
+        </plugin>
+	  </plugins>
+  	</build>   
+</project>
